@@ -1,11 +1,19 @@
+import 'package:hive_flutter/adapters.dart';
+part 'leveling.g.dart';
+
+@HiveType(typeId: 2, adapterName: 'LevelingAdapter')
 class Leveling {
+  @HiveField(0)
   int _level = 1;
+  @HiveField(1)
   int _exp = 0;
+  @HiveField(2)
   int _levelUpExp = 10;
 
   //0 = user leveling
   //1 = topic leveling
   //2 = skill leveling
+  @HiveField(3)
   int configer;
 
   Leveling({required this.configer}) {

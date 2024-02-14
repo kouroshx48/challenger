@@ -17,7 +17,7 @@ class _ProfileState extends State<Profile> {
   Color appBarColor = Colors.black26;
   Color textsColor = const Color(0xff54494b);
   User test = testUser;
-  
+
   @override
   Widget build(BuildContext context) {
 

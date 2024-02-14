@@ -5,16 +5,22 @@ import 'package:challenger/controllers/topic.dart';
 import 'package:challenger/controllers/skill.dart';
 import 'package:hive_flutter/adapters.dart';
 
-
+part 'user.g.dart';
 
 //the class to interact with every thing related to user
-class User{
+@HiveType(typeId: 1, adapterName: 'UserAdapter')
+class User {
+  @HiveField(0)
   final String fullName;
+  @HiveField(1)
   final Leveling _userLevel = Leveling(configer: 0);
+  @HiveField(2)
   final List<Topic> topicsList = [];
 
   //list view will be created with this lists
+  @HiveField(3)
   final List<Mission> _userMissions = [];
+  @HiveField(4)
   final List<Skill> _userSkills = [];
 
   User({
@@ -47,6 +53,7 @@ class User{
       topicsList[index].getTopicLevelObj.getLevel;
 
   List<Mission> get getUserMissions => _userMissions;
+
   List<Skill> get getUserSkills => _userSkills;
 
   //add exp to user and update user box in hive
@@ -67,13 +74,14 @@ class User{
   }
 
   //add new topic to topic list
-  void addTopic(String name){
+  void addTopic(String name) {
     Topic newTopic = Topic(name: name);
     topicsList.add(newTopic);
     //TODO update dataBase to save in the local storage
-
   }
-
+  void addNewSkill(Skill newSkill){
+    _userSkills.add(newSkill);
+  }
 }
 
 final User testUser = User(fullName: 'Kourosh Fouladvand');

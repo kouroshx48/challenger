@@ -1,13 +1,19 @@
 import 'package:challenger/controllers/events/levelingevents.dart';
 import 'package:challenger/controllers/leveling.dart';
 import 'package:challenger/controllers/topic.dart';
+import 'package:hive_flutter/adapters.dart';
+part 'skill.g.dart';
 // import 'package:challenger/controllers/topic.dart';
-
+@HiveType(typeId: 3, adapterName: 'SkillAdapter')
 class Skill {
+  @HiveField(0)
   final String name;
+  @HiveField(1)
   final String skillType;
+  @HiveField(2)
   final Leveling _skillLeveling = Leveling(configer: 2);
   // final int expForTopics;
+  @HiveField(3)
   final List<Topic>? relatedTopics;
 
   Skill({

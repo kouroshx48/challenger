@@ -1,20 +1,49 @@
+import 'package:challenger/controllers/leveling.dart';
+import 'package:challenger/controllers/mission.dart';
+import 'package:challenger/controllers/skill.dart';
+import 'package:challenger/controllers/topic.dart';
+import 'package:challenger/controllers/user.dart';
 import 'package:challenger/screens/missions_screen.dart';
 import 'package:challenger/screens/skill_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'screens/profile_screen.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
 import 'package:challenger/components/app_bars.dart';
 
 Future<void> main() async {
-  // User obj = User(fullName: 'alireza', nickName: 'challenger');
-  // obj.addExp(92);
-  // print('--------------------');
-  // print(obj.getUserLevel);
-  // print(obj.getUserExp);
-  // print(obj.getExpNeededToLevelUp);
-  // print(obj.getExpPerc / 100);
 
+  await Hive.initFlutter();
+
+  //register adapters
+  Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(LevelingAdapter());
+  Hive.registerAdapter(SkillAdapter());
+  Hive.registerAdapter(TopicAdapter());
+  Hive.registerAdapter(MissionAdapter());
+
+  //open <users> box
+  await Hive.openBox('users');
+
+  var userBox = Hive.box('users');
+  userBox.put('test@email.com', User(fullName: 'kourosh'));
+
+  User user = userBox.get('test@email.com');
+  user.addExpToUser(13);
+  user.addNewSkill(Skill(name: 'test', skillType: 'Active'));
+  print('level info ---------------------');
+  print(user.getLevelObject.getLevel);
+  print(user.getLevelObject.getExp);
+  print(user.getLevelObject.getLevelUpExp);
+  print('skill info ---------------------');
+  print(user.getUserSkills[0].name);
+
+
+  //to update every thing happened update the user
+  //funcUpdate(User newUser){
+  // Hive.put('email', newUser)
+  // }
 
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

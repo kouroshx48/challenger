@@ -1,56 +1,41 @@
-import 'package:hive_flutter/adapters.dart';
+import 'package:isar/isar.dart';
+
 part 'leveling.g.dart';
 
-@HiveType(typeId: 2, adapterName: 'LevelingAdapter')
+@embedded
 class Leveling {
-  @HiveField(0)
-  int _level = 1;
-  @HiveField(1)
-  int _exp = 0;
-  @HiveField(2)
-  int _levelUpExp = 10;
+  int level = 1;
+  int exp = 0;
+  late int levelUpExp =
+      configer == 0 ? 10 : (configer == 1 ? 125 : (configer == 2 ? 5 : 10));
 
   //0 = user leveling
   //1 = topic leveling
   //2 = skill leveling
-  @HiveField(3)
-  int configer;
+  int? configer;
 
-  Leveling({required this.configer}) {
-    resetLevel(configer);
-  }
+  Leveling({this.configer});
 
-  int get getExp => _exp;
+  void setLevel(int value) => level = value;
 
-  int get getLevel => _level;
+  void setExp(int value) => exp = value;
 
-  int get getLevelUpExp => _levelUpExp;
-
-  void setLevel(int value) => _level = value;
-
-  void setExp(int value) => _exp = value;
-
-  void setLevelUpExp(int value) => _levelUpExp = value;
+  void setLevelUpExp(int value) => levelUpExp = value;
 
   void resetLevel(int configer) {
     setLevel(1);
     setExp(0);
     if (configer == 0) {
       setLevelUpExp(10);
-    }else if(configer == 1){
+    } else if (configer == 1) {
       setLevelUpExp(125);
-    }else if(configer == 2){
+    } else if (configer == 2) {
       setLevelUpExp(5);
     }
   }
 
-  double expPercent() {
-    double perc = (getExp * 100) / getLevelUpExp;
-    return perc;
-  }
-
   int newLevel() {
-    int newLevelCalc = getLevel;
+    int newLevelCalc = level!;
     return newLevelCalc;
   }
 

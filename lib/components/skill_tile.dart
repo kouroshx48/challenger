@@ -68,7 +68,7 @@ class SkillTile extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                skill.name,
+                                skill.name!,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white70,
@@ -78,7 +78,7 @@ class SkillTile extends StatelessWidget {
                                 width: 12,
                               ),
                               Text(
-                                '(lvl ${skill.getSkillLevelingObj.getLevel})',
+                                '(lvl ${skill.skillLeveling.level})',
                                 style: TextStyle(
                                     color: Colors.grey[500], fontSize: 14),
                               )
@@ -92,7 +92,7 @@ class SkillTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 20.0),
                     child: Text(
-                      '(${skill.getSkillType})',
+                      '(${skill.skillType})',
                       style: TextStyle(
                           color: Colors.grey[400],
                           fontStyle: FontStyle.italic,
@@ -112,14 +112,14 @@ class SkillTile extends StatelessWidget {
                 progressColor: Colors.green[400],
                 barRadius: const Radius.circular(12),
                 leading: Text(
-                  skill.getSkillLevelingObj.getExp.toString(),
+                  skill.skillLeveling.exp.toString(),
                   style: TextStyle(
                       color: Colors.grey[500],
                       fontWeight: FontWeight.bold,
                       fontSize: 15),
                 ),
                 trailing: Text(
-                  skill.getSkillLevelingObj.getLevelUpExp.toString(),
+                  skill.skillLeveling.levelUpExp.toString(),
                   style: TextStyle(
                       color: Colors.grey[500],
                       fontWeight: FontWeight.bold,

@@ -1,34 +1,35 @@
 import 'package:challenger/controllers/events/levelingevents.dart';
 import 'package:challenger/controllers/leveling.dart';
 import 'package:challenger/controllers/topic.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:isar/isar.dart';
 part 'skill.g.dart';
 // import 'package:challenger/controllers/topic.dart';
-@HiveType(typeId: 3, adapterName: 'SkillAdapter')
+@embedded
 class Skill {
-  @HiveField(0)
-  final String name;
-  @HiveField(1)
-  final String skillType;
-  @HiveField(2)
-  final Leveling _skillLeveling = Leveling(configer: 2);
+  final String? name;
+  final String? skillType;
+  @Name('skillLeveling')
+  final Leveling skillLeveling = Leveling(configer: 2);
   // final int expForTopics;
-  @HiveField(3)
   final List<Topic>? relatedTopics;
 
+  // String description;
+
   Skill({
-    required this.name,
-    required this.skillType,
+    this.name,
+    this.skillType,
     this.relatedTopics,
+    // this.description = ''
   });
 
-  Leveling get getSkillLevelingObj => _skillLeveling;
-  String get getSkillType => skillType;
+  @ignore
+  get getSkillLevelingObj => null;
+
 
   void addExpToSkill(int value) {
-    int amount = value + getSkillLevelingObj.getExp;
-    getSkillLevelingObj.setExp(amount);
-    ExpIncreaseEvent(object: this,userLevelingObj: getSkillLevelingObj, configer: 2);
+    int amount = value + skillLeveling.exp!;
+    skillLeveling.setExp(amount);
+    ExpIncreaseEvent(object: this,userLevelingObj: skillLeveling, configer: 2);
   }
 
   // void addRelatedTopic(Topic topic) {

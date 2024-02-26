@@ -1,19 +1,16 @@
-import 'package:hive_flutter/adapters.dart';
+import 'package:isar/isar.dart';
 part 'mission.g.dart';
 
-@HiveType(typeId: 5)
+@embedded
 class Mission{
-  @HiveField(0)
-  final String name;
-  @HiveField(1)
-  final int expAmount;
-  @HiveField(2)
-  final String description;
+  final String? name;
+  final int? expAmount;
+  final String? description;
 
   Mission({
-   required this.name,
-   required this.expAmount,
-    this.description = ''
+    this.name,
+    this.expAmount,
+    this.description
   });
 
 }

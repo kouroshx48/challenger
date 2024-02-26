@@ -48,7 +48,7 @@ class MissionTile extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                mission.name,
+                mission.name!,
                 style: const TextStyle(
                     color: Colors.white70,
                     fontWeight: FontWeight.bold,

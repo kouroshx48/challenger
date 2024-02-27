@@ -4,18 +4,51 @@ import 'package:challenger/controllers/skill.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class SkillTile extends StatelessWidget {
+class SkillTile extends StatefulWidget {
   final Skill skill;
-  final List timerController;
-  final VoidCallback onSkillPointTimer;
 
   const SkillTile(
       {super.key,
       required this.skill,
-      required this.onSkillPointTimer,
-      required this.timerController});
+      });
+
+  @override
+  State<SkillTile> createState() => _SkillTileState();
+}
+
+class _SkillTileState extends State<SkillTile> {
+  final List _timer = [false, 0, 60];
 
   //[isTimerActive,timeSpent, timerEnd  ]
+  void onSkillPointAdding() {
+    var startTime = DateTime.now();
+    int elapsedTime = _timer[1];
+    setState(() {
+      _timer[0] = !_timer[0];
+    });
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        //check if user has stopped the the timer
+        if (_timer[0] == false) {
+          timer.cancel();
+        }
+        if (_timer[1] == _timer[2]) {
+          timer.cancel();
+          _timer[0] = false;
+          _timer[1] = 0;
+          //TODO add Skill Point To Related Skill
+        }
+        if (_timer[0]) {
+          var currentTime = DateTime.now();
+          _timer[1] = elapsedTime +
+              currentTime.second -
+              startTime.second +
+              60 * (currentTime.minute - startTime.minute) +
+              60 * 60 * (currentTime.hour - startTime.hour);
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +74,21 @@ class SkillTile extends StatelessWidget {
                         lineWidth: 8,
                         circularStrokeCap: CircularStrokeCap.round,
                         center: InkWell(
-                            onTap: onSkillPointTimer,
+                            onTap: onSkillPointAdding,
                             borderRadius: BorderRadius.circular(50),
-                            child: !timerController[0]
+                            child: !_timer[0]
                                 ? const Icon(
                                     Icons.play_arrow,
                                     color: Colors.white70,
                                   )
                                 : const Icon(Icons.pause,
                                     color: Colors.white70)),
-                        percent: timerController[1] / timerController[2],
+                        percent: _timer[1] / _timer[2],
                         backgroundColor: Colors.grey.shade500,
                         progressColor:
-                            timerController[1] / timerController[2] < .5
+                        _timer[1] / _timer[2] < .5
                                 ? Colors.red.shade400
-                                : (timerController[1] / timerController[2] < .75
+                                : (_timer[1] / _timer[2] < .75
                                     ? Colors.orange.shade400
                                     : Colors.green.shade400),
                       ),
@@ -68,7 +101,7 @@ class SkillTile extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                skill.name!,
+                                widget.skill.name!,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white70,
@@ -78,13 +111,13 @@ class SkillTile extends StatelessWidget {
                                 width: 12,
                               ),
                               Text(
-                                '(lvl ${skill.skillLeveling.level})',
+                                '(lvl ${widget.skill.skillLeveling.level})',
                                 style: TextStyle(
                                     color: Colors.grey[500], fontSize: 14),
                               )
                             ],
                           ),
-                          Text(timerController[1].toString())
+                          Text(_timer[1].toString())
                         ],
                       )
                     ],
@@ -92,7 +125,7 @@ class SkillTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 20.0),
                     child: Text(
-                      '(${skill.skillType})',
+                      '(${widget.skill.skillType})',
                       style: TextStyle(
                           color: Colors.grey[400],
                           fontStyle: FontStyle.italic,
@@ -112,14 +145,14 @@ class SkillTile extends StatelessWidget {
                 progressColor: Colors.green[400],
                 barRadius: const Radius.circular(12),
                 leading: Text(
-                  skill.skillLeveling.exp.toString(),
+                  widget.skill.skillLeveling.exp.toString(),
                   style: TextStyle(
                       color: Colors.grey[500],
                       fontWeight: FontWeight.bold,
                       fontSize: 15),
                 ),
                 trailing: Text(
-                  skill.skillLeveling.levelUpExp.toString(),
+                  widget.skill.skillLeveling.levelUpExp.toString(),
                   style: TextStyle(
                       color: Colors.grey[500],
                       fontWeight: FontWeight.bold,

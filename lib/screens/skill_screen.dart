@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:challenger/components/clippers.dart';
 import 'package:challenger/components/skill_tile.dart';
-import 'package:challenger/controllers/skill.dart';
 import 'package:challenger/data/user_data_base.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
-
 import '../components/skill_create_dialog.dart';
 
 class SkillScreen extends StatefulWidget {
@@ -20,17 +18,23 @@ class SkillScreen extends StatefulWidget {
 class _SkillScreenState extends State<SkillScreen> {
   double percentage = .2;
 
-  //TODO shall be removed and consumer shall be used
-  List<Skill> listSkills = [Skill(name: 'test', skillType: 'Active')];
-
+  Timer? skillTimer;
 
   //check if a new skill is created or not
   //TODO shall be saved in Isar in timer part
-  bool isSkillCreated = false;
+  bool? isSkillCreated;
+
+  Duration? _onFormat;
+  double? _percent;
 
   //load data from isar
   void _loadData() async {
     context.read<ChallengerDB>().readData();
+    final settings = context.read<ChallengerDB>().currentUser!.userSettings;
+    isSkillCreated = settings.skillISCreated;
+    _onFormat = Duration(seconds: settings.skillCreationCoolDown);
+    _percent = 0;
+    loadTimer();
   }
 
   @override
@@ -40,7 +44,12 @@ class _SkillScreenState extends State<SkillScreen> {
     _loadData();
   }
 
-
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    skillTimer?.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +63,7 @@ class _SkillScreenState extends State<SkillScreen> {
                       return InkWell(
                         onDoubleTap: () => removeSkill(index),
                         child: SkillTile(
-                          skill: value.skills![index],
+                          skillIndex: index,
                         ),
                       );
                     }),
@@ -69,7 +78,7 @@ class _SkillScreenState extends State<SkillScreen> {
                         child: CircularPercentIndicator(
                           radius: 80,
                           lineWidth: 15,
-                          percent: percentage,
+                          percent: _percent!,
                           animation: true,
                           animationDuration: 1500,
                           backgroundColor: Colors.black12,
@@ -80,9 +89,10 @@ class _SkillScreenState extends State<SkillScreen> {
                                   : Colors.green.shade400),
                           curve: Curves.linearToEaseOut,
                           circularStrokeCap: CircularStrokeCap.round,
-                          center: isSkillCreated
+                          center: value.currentUser!.userSettings.skillISCreated
                               ? onSkillWaitTimeWidget()
                               : addSkillWidget(),
+                          animateFromLastPercent: true,
                         ),
                       ),
                     ),
@@ -100,7 +110,10 @@ class _SkillScreenState extends State<SkillScreen> {
           InkWell(
               borderRadius: BorderRadius.circular(20),
               onTap: () {
-                showDialog(context: context, builder: (context) => const SkillCreationBox());
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        SkillCreationBox(startTimer: startSkillTimer));
               },
               child: const Icon(
                 Icons.add,
@@ -116,16 +129,71 @@ class _SkillScreenState extends State<SkillScreen> {
   }
 
   Widget onSkillWaitTimeWidget() {
-    return InkWell(
-        onTap: () => setState(() {
-              isSkillCreated = false;
-            }),
-        child: Text('remaining time'));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Time To New Skill', style: TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),),
+        Text(
+          formatDuration(_onFormat!),
+          style: const TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+      ],
+    );
   }
 
-  void removeSkill(int index){
+  void removeSkill(int index) {
     final skills = context.read<ChallengerDB>().skills;
     skills!.removeAt(index);
     context.read<ChallengerDB>().updateDate();
+  }
+
+  void startSkillTimer() {
+    final settings = context.read<ChallengerDB>().currentUser!.userSettings;
+    final now = DateTime.now();
+    settings.skillCreatedTime = now;
+    settings.skillISCreated = true;
+    context.read<ChallengerDB>().updateDate();
+    loadTimer();
+  }
+
+  void loadTimer() {
+    final settings = context.read<ChallengerDB>().currentUser!.userSettings;
+    if (settings.skillISCreated) {
+      DateTime? timeSkillCreated = settings.skillCreatedTime;
+      skillTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        final settings = context.read<ChallengerDB>().currentUser!.userSettings;
+        //time that is now after every second
+        var newTime = DateTime.now();
+        var diff = newTime.difference(timeSkillCreated!);
+        setState(() {
+          _onFormat = Duration(
+              seconds: (settings.skillCreationCoolDown - diff.inSeconds));
+          _percent = diff.inSeconds / settings.skillCreationCoolDown;
+        });
+        if (diff.inSeconds >= settings.skillCreationCoolDown) {
+          settings.resetSkillTimerToZero();
+          context.read<ChallengerDB>().updateDate();
+          timer.cancel();
+          setState(() {
+            _percent = 0;
+          });
+        }
+      });
+    }
+  }
+
+  String formatDuration(Duration duration) {
+    int days = duration.inDays;
+    int hours = duration.inHours.remainder(24);
+    int minutes = duration.inMinutes % 60;
+    int seconds = duration.inSeconds % 60;
+
+    String daysInStr = days >= 10 ? '$days' : '0$days';
+    String hoursInStr = hours >= 10 ? '$hours' : '0$hours';
+    String minutesInStr = minutes >= 10 ? '$minutes' : '0$minutes';
+    String secondsInStr = seconds >= 10 ? '$seconds' : '0$seconds';
+
+    return '$daysInStr:$hoursInStr:$minutesInStr:$secondsInStr';
   }
 }

@@ -45,8 +45,14 @@ const ChallengerSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'Mission',
     ),
-    r'userSkills': PropertySchema(
+    r'userSettings': PropertySchema(
       id: 5,
+      name: r'userSettings',
+      type: IsarType.object,
+      target: r'UserSettings',
+    ),
+    r'userSkills': PropertySchema(
+      id: 6,
       name: r'userSkills',
       type: IsarType.objectList,
       target: r'Skill',
@@ -75,9 +81,11 @@ const ChallengerSchema = CollectionSchema(
   links: {},
   embeddedSchemas: {
     r'Leveling': LevelingSchema,
+    r'UserSettings': UserSettingsSchema,
     r'Topic': TopicSchema,
     r'Mission': MissionSchema,
-    r'Skill': SkillSchema
+    r'Skill': SkillSchema,
+    r'SkillTimer': SkillTimerSchema
   },
   getId: _challengerGetId,
   getLinks: _challengerGetLinks,
@@ -117,6 +125,9 @@ int _challengerEstimateSize(
       bytesCount += MissionSchema.estimateSize(value, offsets, allOffsets);
     }
   }
+  bytesCount += 3 +
+      UserSettingsSchema.estimateSize(
+          object.userSettings, allOffsets[UserSettings]!, allOffsets);
   bytesCount += 3 + object.userSkills.length * 3;
   {
     final offsets = allOffsets[Skill]!;
@@ -154,8 +165,14 @@ void _challengerSerialize(
     MissionSchema.serialize,
     object.userMissions,
   );
-  writer.writeObjectList<Skill>(
+  writer.writeObject<UserSettings>(
     offsets[5],
+    allOffsets,
+    UserSettingsSchema.serialize,
+    object.userSettings,
+  );
+  writer.writeObjectList<Skill>(
+    offsets[6],
     allOffsets,
     SkillSchema.serialize,
     object.userSkills,
@@ -186,8 +203,14 @@ Challenger _challengerDeserialize(
         Mission(),
       ) ??
       [];
-  object.userSkills = reader.readObjectList<Skill>(
+  object.userSettings = reader.readObjectOrNull<UserSettings>(
         offsets[5],
+        UserSettingsSchema.deserialize,
+        allOffsets,
+      ) ??
+      UserSettings();
+  object.userSkills = reader.readObjectList<Skill>(
+        offsets[6],
         SkillSchema.deserialize,
         allOffsets,
         Skill(),
@@ -231,6 +254,13 @@ P _challengerDeserializeProp<P>(
           ) ??
           []) as P;
     case 5:
+      return (reader.readObjectOrNull<UserSettings>(
+            offset,
+            UserSettingsSchema.deserialize,
+            allOffsets,
+          ) ??
+          UserSettings()) as P;
+    case 6:
       return (reader.readObjectList<Skill>(
             offset,
             SkillSchema.deserialize,
@@ -1087,6 +1117,13 @@ extension ChallengerQueryObject
     });
   }
 
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition> userSettings(
+      FilterQuery<UserSettings> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'userSettings');
+    });
+  }
+
   QueryBuilder<Challenger, Challenger, QAfterFilterCondition> userSkillsElement(
       FilterQuery<Skill> q) {
     return QueryBuilder.apply(this, (query) {
@@ -1217,6 +1254,13 @@ extension ChallengerQueryProperty
       userMissionsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userMissions');
+    });
+  }
+
+  QueryBuilder<Challenger, UserSettings, QQueryOperations>
+      userSettingsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userSettings');
     });
   }
 

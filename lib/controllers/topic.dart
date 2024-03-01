@@ -18,7 +18,7 @@ class Topic{
 
   void addExpToTopic(int value) {
     // print('add exp to topic');
-    int amount = value + topicLeveling.exp!;
+    int amount = value + topicLeveling.exp;
     topicLeveling.setExp(amount);
     ExpIncreaseEvent(userLevelingObj: topicLeveling, configer: 1);
   }

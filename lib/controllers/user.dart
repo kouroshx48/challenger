@@ -1,6 +1,8 @@
 import 'package:challenger/controllers/events/levelingevents.dart';
 import 'package:challenger/controllers/leveling.dart';
 import 'package:challenger/controllers/mission.dart';
+import 'package:challenger/controllers/settings.dart';
+import 'package:challenger/controllers/skill_timer.dart';
 import 'package:challenger/controllers/topic.dart';
 import 'package:challenger/controllers/skill.dart';
 import 'package:isar/isar.dart';
@@ -17,11 +19,13 @@ class Challenger {
   String? email;
   String fullName;
   Leveling userLeveling = Leveling(configer: 0);
+  UserSettings userSettings = UserSettings();
   final List<Topic> topicsList = [];
 
   //list view will be created with this lists
   List<Mission> userMissions = [];
   List<Skill> userSkills = [];
+
 
   Challenger({
     required this.fullName,
@@ -30,24 +34,21 @@ class Challenger {
   }
 
   @ignore
-  double get getExpPerc =>
-      userLeveling.exp! / userLeveling.levelUpExp! * 100;
+  double get getExpPerc => userLeveling.exp / userLeveling.levelUpExp * 100;
 
   Topic getTopicByIndex(int index) => topicsList[index];
 
   int getUserTopicLevelUpExpByIndex(int index) =>
-      topicsList[index].topicLeveling.levelUpExp!;
+      topicsList[index].topicLeveling.levelUpExp;
 
-  int getUserTopicExpByIndex(int index) =>
-      topicsList[index].topicLeveling.exp!;
+  int getUserTopicExpByIndex(int index) => topicsList[index].topicLeveling.exp;
 
   int getUSerTopicLevelByIndex(int index) =>
-      topicsList[index].topicLeveling.level!;
-
+      topicsList[index].topicLeveling.level;
 
   //add exp to user and update user box in hive
   void addExpToUser(int value) {
-    int amount = value + userLeveling.exp!;
+    int amount = value + userLeveling.exp;
     userLeveling.setExp(amount);
     ExpIncreaseEvent(userLevelingObj: userLeveling);
     //TODO update user and save it in the hive
@@ -72,7 +73,6 @@ class Challenger {
   void addNewSkill(Skill newSkill) {
     userSkills.add(newSkill);
   }
-
 }
 // Map<String, dynamic> userToMap(Challenger givenUser) {
 //   String fullName = givenUser.fullName;
@@ -160,5 +160,3 @@ class Challenger {
 //   }
 //   return formattedMissions;
 // }
-
-

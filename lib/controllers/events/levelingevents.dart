@@ -23,9 +23,9 @@ class ExpIncreaseEvent {
       // print('is ready to level up activated');
       LevelUpEvent(
           userLevelingObj: userLevelingObj,
-          pastLevel: userLevelingObj.level!,
-          expBeforeLeveling: userLevelingObj.exp!,
-          pastLevelUpExp: userLevelingObj.levelUpExp!,
+          pastLevel: userLevelingObj.level,
+          expBeforeLeveling: userLevelingObj.exp,
+          pastLevelUpExp: userLevelingObj.levelUpExp,
           configer: configer);
     }
     // }else{print('is not ready');}
@@ -35,7 +35,7 @@ class ExpIncreaseEvent {
     // print(userLevelingObj.getLevel);
     // print(userLevelingObj.getExp );
     // print(userLevelingObj.getLevelUpExp);
-    if (userLevelingObj.exp! >= userLevelingObj.levelUpExp!) {
+    if (userLevelingObj.exp >= userLevelingObj.levelUpExp) {
       return true;
     } else {
       return false;

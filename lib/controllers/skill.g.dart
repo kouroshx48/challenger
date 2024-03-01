@@ -30,8 +30,14 @@ const SkillSchema = Schema(
       type: IsarType.object,
       target: r'Leveling',
     ),
-    r'skillType': PropertySchema(
+    r'skillTimer': PropertySchema(
       id: 3,
+      name: r'skillTimer',
+      type: IsarType.object,
+      target: r'SkillTimer',
+    ),
+    r'skillType': PropertySchema(
+      id: 4,
       name: r'skillType',
       type: IsarType.string,
     )
@@ -70,6 +76,9 @@ int _skillEstimateSize(
   bytesCount += 3 +
       LevelingSchema.estimateSize(
           object.skillLeveling, allOffsets[Leveling]!, allOffsets);
+  bytesCount += 3 +
+      SkillTimerSchema.estimateSize(
+          object.skillTimer, allOffsets[SkillTimer]!, allOffsets);
   {
     final value = object.skillType;
     if (value != null) {
@@ -98,7 +107,13 @@ void _skillSerialize(
     LevelingSchema.serialize,
     object.skillLeveling,
   );
-  writer.writeString(offsets[3], object.skillType);
+  writer.writeObject<SkillTimer>(
+    offsets[3],
+    allOffsets,
+    SkillTimerSchema.serialize,
+    object.skillTimer,
+  );
+  writer.writeString(offsets[4], object.skillType);
 }
 
 Skill _skillDeserialize(
@@ -115,8 +130,20 @@ Skill _skillDeserialize(
       allOffsets,
       Topic(),
     ),
-    skillType: reader.readStringOrNull(offsets[3]),
+    skillType: reader.readStringOrNull(offsets[4]),
   );
+  object.skillLeveling = reader.readObjectOrNull<Leveling>(
+        offsets[2],
+        LevelingSchema.deserialize,
+        allOffsets,
+      ) ??
+      Leveling();
+  object.skillTimer = reader.readObjectOrNull<SkillTimer>(
+        offsets[3],
+        SkillTimerSchema.deserialize,
+        allOffsets,
+      ) ??
+      SkillTimer();
   return object;
 }
 
@@ -144,6 +171,13 @@ P _skillDeserializeProp<P>(
           ) ??
           Leveling()) as P;
     case 3:
+      return (reader.readObjectOrNull<SkillTimer>(
+            offset,
+            SkillTimerSchema.deserialize,
+            allOffsets,
+          ) ??
+          SkillTimer()) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -555,6 +589,13 @@ extension SkillQueryObject on QueryBuilder<Skill, Skill, QFilterCondition> {
       FilterQuery<Leveling> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'skillLeveling');
+    });
+  }
+
+  QueryBuilder<Skill, Skill, QAfterFilterCondition> skillTimer(
+      FilterQuery<SkillTimer> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'skillTimer');
     });
   }
 }

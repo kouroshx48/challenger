@@ -1,5 +1,5 @@
-import 'package:challenger/controllers/leveling.dart';
 import 'package:challenger/controllers/mission.dart';
+import 'package:challenger/controllers/settings.dart';
 import 'package:challenger/controllers/skill.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,9 +49,9 @@ class ChallengerDB extends ChangeNotifier {
   void updateDate() async {
     currentUser!.userMissions = missions!;
     currentUser!.userSkills = skills!;
-    print(currentUser!.userLeveling.level);
-    print(currentUser!.userLeveling.exp);
-    print(currentUser!.userLeveling.levelUpExp);
+    // print(currentUser!.userLeveling.level);
+    // print(currentUser!.userLeveling.exp);
+    // print(currentUser!.userLeveling.levelUpExp);
     await isar.writeTxn(() async => await isar.challengers.put(currentUser!));
     readData();
   }

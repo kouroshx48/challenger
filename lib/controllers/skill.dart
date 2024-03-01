@@ -1,5 +1,6 @@
 import 'package:challenger/controllers/events/levelingevents.dart';
 import 'package:challenger/controllers/leveling.dart';
+import 'package:challenger/controllers/skill_timer.dart';
 import 'package:challenger/controllers/topic.dart';
 import 'package:isar/isar.dart';
 part 'skill.g.dart';
@@ -8,11 +9,10 @@ part 'skill.g.dart';
 class Skill {
   final String? name;
   final String? skillType;
-  @Name('skillLeveling')
-  final Leveling skillLeveling = Leveling(configer: 2);
+  Leveling skillLeveling = Leveling(configer: 2);
   // final int expForTopics;
   final List<Topic>? relatedTopics;
-
+  SkillTimer  skillTimer = SkillTimer();
   // String description;
 
   Skill({
@@ -27,7 +27,7 @@ class Skill {
 
 
   void addExpToSkill(int value) {
-    int amount = value + skillLeveling.exp!;
+    int amount = value + skillLeveling.exp;
     skillLeveling.setExp(amount);
     ExpIncreaseEvent(object: this,userLevelingObj: skillLeveling, configer: 2);
   }

@@ -35,7 +35,7 @@ class Leveling {
   }
 
   int newLevel() {
-    int newLevelCalc = level!;
+    int newLevelCalc = level;
     return newLevelCalc;
   }
 

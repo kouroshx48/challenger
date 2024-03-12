@@ -45,14 +45,20 @@ const ChallengerSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'Mission',
     ),
-    r'userSettings': PropertySchema(
+    r'userQuests': PropertySchema(
       id: 5,
+      name: r'userQuests',
+      type: IsarType.objectList,
+      target: r'DailyQuest',
+    ),
+    r'userSettings': PropertySchema(
+      id: 6,
       name: r'userSettings',
       type: IsarType.object,
       target: r'UserSettings',
     ),
     r'userSkills': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'userSkills',
       type: IsarType.objectList,
       target: r'Skill',
@@ -85,7 +91,8 @@ const ChallengerSchema = CollectionSchema(
     r'Topic': TopicSchema,
     r'Mission': MissionSchema,
     r'Skill': SkillSchema,
-    r'SkillTimer': SkillTimerSchema
+    r'SkillTimer': SkillTimerSchema,
+    r'DailyQuest': DailyQuestSchema
   },
   getId: _challengerGetId,
   getLinks: _challengerGetLinks,
@@ -123,6 +130,14 @@ int _challengerEstimateSize(
     for (var i = 0; i < object.userMissions.length; i++) {
       final value = object.userMissions[i];
       bytesCount += MissionSchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
+  bytesCount += 3 + object.userQuests.length * 3;
+  {
+    final offsets = allOffsets[DailyQuest]!;
+    for (var i = 0; i < object.userQuests.length; i++) {
+      final value = object.userQuests[i];
+      bytesCount += DailyQuestSchema.estimateSize(value, offsets, allOffsets);
     }
   }
   bytesCount += 3 +
@@ -165,14 +180,20 @@ void _challengerSerialize(
     MissionSchema.serialize,
     object.userMissions,
   );
-  writer.writeObject<UserSettings>(
+  writer.writeObjectList<DailyQuest>(
     offsets[5],
+    allOffsets,
+    DailyQuestSchema.serialize,
+    object.userQuests,
+  );
+  writer.writeObject<UserSettings>(
+    offsets[6],
     allOffsets,
     UserSettingsSchema.serialize,
     object.userSettings,
   );
   writer.writeObjectList<Skill>(
-    offsets[6],
+    offsets[7],
     allOffsets,
     SkillSchema.serialize,
     object.userSkills,
@@ -203,14 +224,21 @@ Challenger _challengerDeserialize(
         Mission(),
       ) ??
       [];
-  object.userSettings = reader.readObjectOrNull<UserSettings>(
+  object.userQuests = reader.readObjectList<DailyQuest>(
         offsets[5],
+        DailyQuestSchema.deserialize,
+        allOffsets,
+        DailyQuest(),
+      ) ??
+      [];
+  object.userSettings = reader.readObjectOrNull<UserSettings>(
+        offsets[6],
         UserSettingsSchema.deserialize,
         allOffsets,
       ) ??
       UserSettings();
   object.userSkills = reader.readObjectList<Skill>(
-        offsets[6],
+        offsets[7],
         SkillSchema.deserialize,
         allOffsets,
         Skill(),
@@ -254,13 +282,21 @@ P _challengerDeserializeProp<P>(
           ) ??
           []) as P;
     case 5:
+      return (reader.readObjectList<DailyQuest>(
+            offset,
+            DailyQuestSchema.deserialize,
+            allOffsets,
+            DailyQuest(),
+          ) ??
+          []) as P;
+    case 6:
       return (reader.readObjectOrNull<UserSettings>(
             offset,
             UserSettingsSchema.deserialize,
             allOffsets,
           ) ??
           UserSettings()) as P;
-    case 6:
+    case 7:
       return (reader.readObjectList<Skill>(
             offset,
             SkillSchema.deserialize,
@@ -1005,6 +1041,95 @@ extension ChallengerQueryFilter
   }
 
   QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
+      userQuestsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userQuests',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
+      userQuestsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userQuests',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
+      userQuestsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userQuests',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
+      userQuestsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userQuests',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
+      userQuestsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userQuests',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
+      userQuestsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'userQuests',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition>
       userSkillsLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
@@ -1114,6 +1239,13 @@ extension ChallengerQueryObject
       userMissionsElement(FilterQuery<Mission> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'userMissions');
+    });
+  }
+
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition> userQuestsElement(
+      FilterQuery<DailyQuest> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'userQuests');
     });
   }
 
@@ -1254,6 +1386,13 @@ extension ChallengerQueryProperty
       userMissionsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userMissions');
+    });
+  }
+
+  QueryBuilder<Challenger, List<DailyQuest>, QQueryOperations>
+      userQuestsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userQuests');
     });
   }
 

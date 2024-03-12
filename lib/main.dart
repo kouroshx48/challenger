@@ -1,6 +1,7 @@
 import 'package:challenger/data/user_data_base.dart';
 import 'package:challenger/screens/auth_screen.dart';
 import 'package:challenger/screens/missions_screen.dart';
+import 'package:challenger/screens/quests_screen.dart';
 import 'package:challenger/screens/skill_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,11 +55,12 @@ class MainNavigator extends StatefulWidget {
 class _PageControllerState extends State<MainNavigator> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> screens = const [SkillScreen(), Profile(), Challenges()];
+    List<Widget> screens = const [QuestsScreen(),SkillScreen(), Profile(), Challenges()];
     Map<int, PreferredSizeWidget> appBars = {
-      0: screenAppBar('Skills'),
-      1: screenAppBar('Challenger Profile'),
-      2: screenAppBar('Missions')
+      0: screenAppBar('Daily Quests'),
+      1: screenAppBar('Skills'),
+      2: screenAppBar('Challenger Profile'),
+      3: screenAppBar('Missions')
     };
     return Scaffold(
       extendBody: true,
@@ -76,7 +78,7 @@ class _PageControllerState extends State<MainNavigator> {
     borderRadius: BorderRadius.all(Radius.circular(25)),
   );
   SnakeShape snakeShape = SnakeShape.circle;
-  int _selectedItemPosition = 1;
+  int _selectedItemPosition = 2;
 
   Widget snakeNavBar() {
     return SnakeNavigationBar.color(
@@ -93,6 +95,7 @@ class _PageControllerState extends State<MainNavigator> {
         _selectedItemPosition = index;
       }),
       items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.ac_unit_sharp)),
         BottomNavigationBarItem(icon: Icon(Icons.cabin)),
         BottomNavigationBarItem(icon: Icon(Icons.person)),
         BottomNavigationBarItem(icon: Icon(Icons.add)),

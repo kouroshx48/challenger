@@ -7,6 +7,8 @@ import 'package:challenger/controllers/topic.dart';
 import 'package:challenger/controllers/skill.dart';
 import 'package:isar/isar.dart';
 
+import 'daily_quest.dart';
+
 part 'user.g.dart';
 
 //the class to interact with every thing related to user
@@ -25,6 +27,7 @@ class Challenger {
   //list view will be created with this lists
   List<Mission> userMissions = [];
   List<Skill> userSkills = [];
+  List<DailyQuest> userQuests = [];
 
 
   Challenger({

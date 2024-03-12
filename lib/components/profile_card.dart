@@ -54,7 +54,7 @@ class ProfileCard extends StatelessWidget {
                     height: 27,
                   ),
                   SizedBox(
-                    width: 150,
+                    width: 180,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

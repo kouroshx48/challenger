@@ -22,7 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  void registerUserToDb(Challenger newChallenger){
+  Future<void> registerUserToDb(Challenger newChallenger) async {
     context.read<ChallengerDB>().createChallenger(newChallenger);
   }
   void signUpNewUser() async {
@@ -38,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         //create new user in local db here
         Challenger newUser = Challenger(fullName: _challengerName.text)
           ..email = _emailController.text;
-        registerUserToDb(newUser);
+        await registerUserToDb(newUser);
       }
     }
   }

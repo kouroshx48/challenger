@@ -54,10 +54,10 @@ class SkillClipper extends CustomClipper<Path> {
     Path path = Path();
     final h = size.height;
     final w = size.width;
-    path.lineTo(0, h * .5);
+    path.lineTo(0, h * .3);
     path.quadraticBezierTo(w * 1/6, h * .25, w * 2/6 - 25, h * .5);
     path.quadraticBezierTo(w * 3/6 , h , w * 4/6 + 25, h * .5);
-    path.quadraticBezierTo(w * 5/6, h * .25, w, h * .5);
+    path.quadraticBezierTo(w * 5/6, h * .25, w, h * .3);
     path.lineTo(w, 0);
     return path;
   }
@@ -67,4 +67,26 @@ class SkillClipper extends CustomClipper<Path> {
     // TODO: implement shouldReclip
     return true;
   }
+}
+
+class QuestClipper extends CustomClipper<Path>{
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    final h = size.height;
+    final w = size.width;
+    path.lineTo(0, 7);
+    path.quadraticBezierTo(w * .25/6, h * 1/3, w * 2/6 + 15, h * 1/3);
+    path.quadraticBezierTo(w * 1/2, h, w * 4/6 - 15, h * 1/3);
+    path.quadraticBezierTo(w * 5.75/6, h * 1/3, w , 7);
+    path.lineTo(w, 0);
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return true;
+  }
+
 }

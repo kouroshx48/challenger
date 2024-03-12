@@ -80,11 +80,6 @@ class _ProfileState extends State<Profile> {
                     child: const Text('signOut'),
                   ),
                 ),
-                Center(
-                  child: MaterialButton(
-                      onPressed: () => print('koni'),
-                      child: const Text('see user')),
-                )
               ],
             )
           ],

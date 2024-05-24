@@ -17,48 +17,54 @@ const ChallengerSchema = CollectionSchema(
   name: r'Challenger',
   id: 7817116215072824805,
   properties: {
-    r'email': PropertySchema(
+    r'currentChallenge': PropertySchema(
       id: 0,
+      name: r'currentChallenge',
+      type: IsarType.object,
+      target: r'Challenge',
+    ),
+    r'email': PropertySchema(
+      id: 1,
       name: r'email',
       type: IsarType.string,
     ),
     r'fullName': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'fullName',
       type: IsarType.string,
     ),
     r'topicsList': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'topicsList',
       type: IsarType.objectList,
       target: r'Topic',
     ),
     r'userLeveling': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'userLeveling',
       type: IsarType.object,
       target: r'Leveling',
     ),
     r'userMissions': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'userMissions',
       type: IsarType.objectList,
       target: r'Mission',
     ),
     r'userQuests': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'userQuests',
       type: IsarType.objectList,
       target: r'DailyQuest',
     ),
     r'userSettings': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'userSettings',
       type: IsarType.object,
       target: r'UserSettings',
     ),
     r'userSkills': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'userSkills',
       type: IsarType.objectList,
       target: r'Skill',
@@ -92,7 +98,8 @@ const ChallengerSchema = CollectionSchema(
     r'Mission': MissionSchema,
     r'Skill': SkillSchema,
     r'SkillTimer': SkillTimerSchema,
-    r'DailyQuest': DailyQuestSchema
+    r'DailyQuest': DailyQuestSchema,
+    r'Challenge': ChallengeSchema
   },
   getId: _challengerGetId,
   getLinks: _challengerGetLinks,
@@ -106,6 +113,9 @@ int _challengerEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 +
+      ChallengeSchema.estimateSize(
+          object.currentChallenge, allOffsets[Challenge]!, allOffsets);
   {
     final value = object.email;
     if (value != null) {
@@ -160,40 +170,46 @@ void _challengerSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.email);
-  writer.writeString(offsets[1], object.fullName);
+  writer.writeObject<Challenge>(
+    offsets[0],
+    allOffsets,
+    ChallengeSchema.serialize,
+    object.currentChallenge,
+  );
+  writer.writeString(offsets[1], object.email);
+  writer.writeString(offsets[2], object.fullName);
   writer.writeObjectList<Topic>(
-    offsets[2],
+    offsets[3],
     allOffsets,
     TopicSchema.serialize,
     object.topicsList,
   );
   writer.writeObject<Leveling>(
-    offsets[3],
+    offsets[4],
     allOffsets,
     LevelingSchema.serialize,
     object.userLeveling,
   );
   writer.writeObjectList<Mission>(
-    offsets[4],
+    offsets[5],
     allOffsets,
     MissionSchema.serialize,
     object.userMissions,
   );
   writer.writeObjectList<DailyQuest>(
-    offsets[5],
+    offsets[6],
     allOffsets,
     DailyQuestSchema.serialize,
     object.userQuests,
   );
   writer.writeObject<UserSettings>(
-    offsets[6],
+    offsets[7],
     allOffsets,
     UserSettingsSchema.serialize,
     object.userSettings,
   );
   writer.writeObjectList<Skill>(
-    offsets[7],
+    offsets[8],
     allOffsets,
     SkillSchema.serialize,
     object.userSkills,
@@ -207,38 +223,44 @@ Challenger _challengerDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Challenger(
-    fullName: reader.readString(offsets[1]),
+    fullName: reader.readString(offsets[2]),
   );
-  object.email = reader.readStringOrNull(offsets[0]);
+  object.currentChallenge = reader.readObjectOrNull<Challenge>(
+        offsets[0],
+        ChallengeSchema.deserialize,
+        allOffsets,
+      ) ??
+      Challenge();
+  object.email = reader.readStringOrNull(offsets[1]);
   object.challengerId = id;
   object.userLeveling = reader.readObjectOrNull<Leveling>(
-        offsets[3],
+        offsets[4],
         LevelingSchema.deserialize,
         allOffsets,
       ) ??
       Leveling();
   object.userMissions = reader.readObjectList<Mission>(
-        offsets[4],
+        offsets[5],
         MissionSchema.deserialize,
         allOffsets,
         Mission(),
       ) ??
       [];
   object.userQuests = reader.readObjectList<DailyQuest>(
-        offsets[5],
+        offsets[6],
         DailyQuestSchema.deserialize,
         allOffsets,
         DailyQuest(),
       ) ??
       [];
   object.userSettings = reader.readObjectOrNull<UserSettings>(
-        offsets[6],
+        offsets[7],
         UserSettingsSchema.deserialize,
         allOffsets,
       ) ??
       UserSettings();
   object.userSkills = reader.readObjectList<Skill>(
-        offsets[7],
+        offsets[8],
         SkillSchema.deserialize,
         allOffsets,
         Skill(),
@@ -255,10 +277,17 @@ P _challengerDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readObjectOrNull<Challenge>(
+            offset,
+            ChallengeSchema.deserialize,
+            allOffsets,
+          ) ??
+          Challenge()) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
       return (reader.readObjectList<Topic>(
             offset,
             TopicSchema.deserialize,
@@ -266,14 +295,14 @@ P _challengerDeserializeProp<P>(
             Topic(),
           ) ??
           []) as P;
-    case 3:
+    case 4:
       return (reader.readObjectOrNull<Leveling>(
             offset,
             LevelingSchema.deserialize,
             allOffsets,
           ) ??
           Leveling()) as P;
-    case 4:
+    case 5:
       return (reader.readObjectList<Mission>(
             offset,
             MissionSchema.deserialize,
@@ -281,7 +310,7 @@ P _challengerDeserializeProp<P>(
             Mission(),
           ) ??
           []) as P;
-    case 5:
+    case 6:
       return (reader.readObjectList<DailyQuest>(
             offset,
             DailyQuestSchema.deserialize,
@@ -289,14 +318,14 @@ P _challengerDeserializeProp<P>(
             DailyQuest(),
           ) ??
           []) as P;
-    case 6:
+    case 7:
       return (reader.readObjectOrNull<UserSettings>(
             offset,
             UserSettingsSchema.deserialize,
             allOffsets,
           ) ??
           UserSettings()) as P;
-    case 7:
+    case 8:
       return (reader.readObjectList<Skill>(
             offset,
             SkillSchema.deserialize,
@@ -1221,6 +1250,13 @@ extension ChallengerQueryFilter
 
 extension ChallengerQueryObject
     on QueryBuilder<Challenger, Challenger, QFilterCondition> {
+  QueryBuilder<Challenger, Challenger, QAfterFilterCondition> currentChallenge(
+      FilterQuery<Challenge> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'currentChallenge');
+    });
+  }
+
   QueryBuilder<Challenger, Challenger, QAfterFilterCondition> topicsListElement(
       FilterQuery<Topic> q) {
     return QueryBuilder.apply(this, (query) {
@@ -1355,6 +1391,13 @@ extension ChallengerQueryProperty
   QueryBuilder<Challenger, int, QQueryOperations> challengerIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Challenger, Challenge, QQueryOperations>
+      currentChallengeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'currentChallenge');
     });
   }
 

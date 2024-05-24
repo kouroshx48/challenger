@@ -17,8 +17,6 @@ class _ProfileState extends State<Profile> {
   Color backGroundColor = Colors.white10;
   Color appBarColor = Colors.black26;
   Color textsColor = const Color(0xff54494b);
-  Challenger test = Challenger(fullName: 'gg test bemola');
-
 
   void _loadData() {
     context.read<ChallengerDB>().readData();
@@ -31,8 +29,13 @@ class _ProfileState extends State<Profile> {
     _loadData();
   }
 
+  Future<void> _clearLocalDataBase() async {
+    context.read<ChallengerDB>().deleteUser();
+  }
+
   void signUserOut() async {
     await FirebaseAuth.instance.signOut();
+    await _clearLocalDataBase();
   }
 
   @override
@@ -44,7 +47,7 @@ class _ProfileState extends State<Profile> {
     // print(db.currentUser.userLeveling.exp);
     // print(db.currentUser.userLeveling.levelUpExp);
     return Consumer<ChallengerDB>(
-      builder: (context, value, child)=>SingleChildScrollView(
+      builder: (context, value, child) => SingleChildScrollView(
         child: Column(
           children: [
             Stack(
@@ -55,22 +58,23 @@ class _ProfileState extends State<Profile> {
                       color: Colors.grey[500],
                       height: 300,
                     )),
-                 Padding(
-                  padding:  const EdgeInsets.all(21),
+                Padding(
+                  padding: const EdgeInsets.all(21),
                   child: Column(
                     // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       const SizedBox(
+                      const SizedBox(
                         height: 18,
                       ),
-                      ProfileCard(challenger: value.currentUser ?? test,),
+                      ProfileCard(challenger: value.currentUser!),
                     ],
                   ),
                 ),
               ],
             ),
-            const Center(
-              child: Text('you are logged in'),
+            Center(
+              child: Text(
+                  'you are logged in as : ${value.firebaseUserInstance.email} andddd ${value.firebaseUserInstance.uid}'),
             ),
             Column(
               children: [

@@ -1,7 +1,6 @@
 import 'package:challenger/components/my_button.dart';
 import 'package:challenger/components/my_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class QuestDialog extends StatefulWidget {
    const QuestDialog(

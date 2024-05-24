@@ -7,5 +7,6 @@ class SkillTimer{
   bool isActive = false;
   DateTime? timerStart;
   int timeSpent = 0;
+  int timeSpentBeforePause = 0;
   int timerEnd = 60; //in seconds
 }

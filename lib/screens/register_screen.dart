@@ -23,7 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
 
   Future<void> registerUserToDb(Challenger newChallenger) async {
-    context.read<ChallengerDB>().createChallenger(newChallenger);
+    await context.read<ChallengerDB>().createChallenger(newChallenger);
   }
   void signUpNewUser() async {
     if (_challengerName.text.isNotEmpty &&

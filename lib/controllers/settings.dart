@@ -11,11 +11,11 @@ class UserSettings {
   DateTime? skillCreatedTime;
 
   //time to create new skill in seconds
-  int skillCreationCoolDown = 10;
+  int skillCreationCoolDown = 2 * (60*60*24*7);
 
 
   void defaultSettings(){
-    skillCreationCoolDown = 10; //in seconds
+    skillCreationCoolDown = 2 * (60*60*24*7); //2 weeks
   }
   void resetSkillTimerToZero(){
     skillISCreated = false;

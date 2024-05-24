@@ -26,7 +26,7 @@ class Leveling {
     setLevel(1);
     setExp(0);
     if (configer == 0) {
-      setLevelUpExp(10);
+      setLevelUpExp(100);
     } else if (configer == 1) {
       setLevelUpExp(125);
     } else if (configer == 2) {
@@ -44,7 +44,7 @@ class Leveling {
   }
 
   int newLevelUpExp() {
-    int formula = 10 * (newLevel() * newLevel());
+    int formula = 100 * (newLevel() * newLevel());
     return formula;
   }
 

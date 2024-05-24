@@ -12,12 +12,14 @@ class QuestTile extends StatelessWidget {
       this.isCompleted = false,
       this.isCanceled = false,
       required this.onComplete,
-      required this.onCancel});
+      required this.onCancel,
+      required this.onDelete});
 
   final bool isCompleted;
   final bool isCanceled;
   final VoidCallback onComplete;
   final VoidCallback onCancel;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,17 @@ class QuestTile extends StatelessWidget {
                 ],
               )
             : null,
+        startActionPane: ActionPane(motion: const ScrollMotion(), children: [
+          SlidableAction(
+            foregroundColor: Colors.white,
+            onPressed: (context) {
+              onDelete();
+            },
+            icon: CupertinoIcons.delete,
+            backgroundColor: Colors.grey.shade600,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ]),
         child: Container(
           padding: const EdgeInsets.only(left: 12, top: 8, bottom: 12),
           height: 85,
@@ -108,7 +121,7 @@ class QuestTile extends StatelessWidget {
                             children: [
                               Container(
                                   margin: const EdgeInsets.only(left: 18),
-                                  child:  Icon(
+                                  child: Icon(
                                     Icons.check_sharp,
                                     size: 32,
                                     color: Colors.green[400],
@@ -120,7 +133,7 @@ class QuestTile extends StatelessWidget {
                                 children: [
                                   Container(
                                       margin: const EdgeInsets.only(left: 18),
-                                      child:  Icon(
+                                      child: Icon(
                                         CupertinoIcons.clear,
                                         size: 32,
                                         color: Colors.red[400],

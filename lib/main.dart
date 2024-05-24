@@ -1,8 +1,10 @@
 import 'package:challenger/data/user_data_base.dart';
 import 'package:challenger/screens/auth_screen.dart';
+import 'package:challenger/screens/challenges_screen.dart';
 import 'package:challenger/screens/missions_screen.dart';
 import 'package:challenger/screens/quests_screen.dart';
 import 'package:challenger/screens/skill_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -55,12 +57,13 @@ class MainNavigator extends StatefulWidget {
 class _PageControllerState extends State<MainNavigator> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> screens = const [QuestsScreen(),SkillScreen(), Profile(), Challenges()];
+    List<Widget> screens = const [ChallengesScreen(),SkillScreen(), Profile(), QuestsScreen() ,MissionsScreen()];
     Map<int, PreferredSizeWidget> appBars = {
-      0: screenAppBar('Daily Quests'),
+      0: screenAppBar('Challenge'),
       1: screenAppBar('Skills'),
       2: screenAppBar('Challenger Profile'),
-      3: screenAppBar('Missions')
+      3: screenAppBar('Daily Quests'),
+      4: screenAppBar('Missions')
     };
     return Scaffold(
       extendBody: true,
@@ -99,6 +102,7 @@ class _PageControllerState extends State<MainNavigator> {
         BottomNavigationBarItem(icon: Icon(Icons.cabin)),
         BottomNavigationBarItem(icon: Icon(Icons.person)),
         BottomNavigationBarItem(icon: Icon(Icons.add)),
+        BottomNavigationBarItem(icon: Icon(CupertinoIcons.ant_fill))
       ],
     );
   }

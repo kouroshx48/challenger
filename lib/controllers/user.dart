@@ -7,6 +7,7 @@ import 'package:challenger/controllers/topic.dart';
 import 'package:challenger/controllers/skill.dart';
 import 'package:isar/isar.dart';
 
+import 'challenge.dart';
 import 'daily_quest.dart';
 
 part 'user.g.dart';
@@ -28,7 +29,7 @@ class Challenger {
   List<Mission> userMissions = [];
   List<Skill> userSkills = [];
   List<DailyQuest> userQuests = [];
-
+  Challenge currentChallenge= Challenge();
 
   Challenger({
     required this.fullName,

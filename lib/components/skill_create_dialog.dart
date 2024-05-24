@@ -1,4 +1,5 @@
 import 'package:challenger/components/my_button.dart';
+import 'package:challenger/components/my_drop_down.dart';
 import 'package:challenger/controllers/skill.dart';
 import 'package:challenger/data/user_data_base.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,10 @@ class SkillCreationBox extends StatefulWidget {
 
 class _SkillCreationBoxState extends State<SkillCreationBox> {
   final _skillNameController = TextEditingController();
-  final _skillTypeController = TextEditingController();
-  final _skillDescriptionController = TextEditingController();
+
+  final _skillTypes = ['Active', 'Passive'];
+  late String _skillType = _skillTypes.first;
+   // final _skillDescriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +42,7 @@ class _SkillCreationBoxState extends State<SkillCreationBox> {
               const SizedBox(
                 height: 15,
               ),
-              MyTextField(
-                  hintText: 'Active or Passive?',
-                  controller: _skillTypeController),
+              MyDropDown(dropDownItems: _skillTypes, onValueChange: _skillTypeDropdownChange),
               const SizedBox(
                 height: 15,
               ),
@@ -71,23 +72,21 @@ class _SkillCreationBoxState extends State<SkillCreationBox> {
       ),
     );
   }
-
+  void _skillTypeDropdownChange(value) {
+    _skillType = value;
+  }
   void saveSkill() {
-    if (_skillNameController.text.isNotEmpty &&
-        _skillTypeController.text.isNotEmpty) {
+    if (_skillNameController.text.isNotEmpty) {
       List? skills = context.read<ChallengerDB>().skills;
       skills!.add(Skill(
           name: _skillNameController.text,
-          skillType: _skillTypeController.text));
+          skillType: _skillType));
       context.read<ChallengerDB>().updateDate();
       _skillNameController.clear();
-      _skillTypeController.clear();
-      //TODO go and start the timer
       widget.startTimer();
       Navigator.pop(context);
     } else {
       _skillNameController.clear();
-      _skillTypeController.clear();
     }
   }
 }

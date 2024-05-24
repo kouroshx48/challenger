@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
+import '../data/user_data_base.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.onTap});
@@ -14,17 +17,22 @@ class _AuthScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Future<void> _loadDataFromFireStore() async {
+    await context.read<ChallengerDB>().getDataFromServer();
+
+  }
   void _signInToAccount() async {
       showDialog(
           context: context,
-          builder: (context) => const Center(
-                child: CircularProgressIndicator(color: Colors.grey,),
+          builder: (context) =>  Center(
+                child: CircularProgressIndicator(color: Colors.grey[300],),
               ));
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: _emailController.text,
             password: _passwordController.text);
-        Navigator.pop(context);
+        //load data from firestore
+        await _loadDataFromFireStore();
       } on FirebaseAuthException catch (e) {
         if(e.code == 'user-not-found'){
           showErrorDialog('user not found');

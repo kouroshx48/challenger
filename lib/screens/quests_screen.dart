@@ -41,25 +41,24 @@ class _QuestsScreenState extends State<QuestsScreen> {
                 ListView.builder(
                     padding: const EdgeInsets.only(top: 200),
                     itemCount: _getEventsForDay(_selectedDate).length,
-                    itemBuilder: (context, index) => InkWell(
-                          onDoubleTap: () => removeQuest(
-                              _getEventsForDay(_selectedDate)[index]),
-                          child: QuestTile(
-                            dailyQuest: _getEventsForDay(_selectedDate)[index],
-                            isCompleted: _isCompleted(
-                                _getEventsForDay(_selectedDate)[index]),
-                            isCanceled: _isCanceled(
-                                _getEventsForDay(_selectedDate)[index]),
-                            onComplete: () {
-                              _onComplete(
-                                  _getEventsForDay(_selectedDate)[index]);
-                            },
-                            onCancel: (){
-                              _onCancel(
-                                  _getEventsForDay(_selectedDate)[index]);
-                            },
-                          ),
-                        )),
+                    itemBuilder: (context, index) => QuestTile(
+                      dailyQuest: _getEventsForDay(_selectedDate)[index],
+                      isCompleted: _isCompleted(
+                          _getEventsForDay(_selectedDate)[index]),
+                      isCanceled: _isCanceled(
+                          _getEventsForDay(_selectedDate)[index]),
+                      onComplete: () {
+                        _onComplete(
+                            _getEventsForDay(_selectedDate)[index]);
+                      },
+                      onDelete: () {
+                        removeQuest(
+                            _getEventsForDay(_selectedDate)[index]);
+                      },
+                      onCancel: () {
+                        _onCancel(_getEventsForDay(_selectedDate)[index]);
+                      },
+                    )),
                 Column(
                   children: [
                     Container(color: Colors.grey, child: calenderPicker()),
@@ -216,17 +215,17 @@ class _QuestsScreenState extends State<QuestsScreen> {
   }
 
   bool _isCompleted(DailyQuest object) {
-    for(DateTime day in object.completedDates){
-      if(DateUtils.isSameDay(day, _selectedDate)){
+    for (DateTime day in object.completedDates) {
+      if (DateUtils.isSameDay(day, _selectedDate)) {
         return true;
       }
     }
     return false;
   }
 
-  bool _isCanceled(DailyQuest object){
-    for(DateTime day in object.canceledDates){
-      if(DateUtils.isSameDay(day, _selectedDate)){
+  bool _isCanceled(DailyQuest object) {
+    for (DateTime day in object.canceledDates) {
+      if (DateUtils.isSameDay(day, _selectedDate)) {
         return true;
       }
     }
@@ -238,13 +237,16 @@ class _QuestsScreenState extends State<QuestsScreen> {
     int? index = quests?.indexOf(object);
     // print(index);
     // print(_selectedDate);
-    quests![index!].completedDates.add(DateUtils.addDaysToDate(_selectedDate, 0));
+    quests![index!]
+        .completedDates
+        .add(DateUtils.addDaysToDate(_selectedDate, 0));
     final user = context.read<ChallengerDB>().currentUser;
     user?.addExpToUser(object.expAmount! + object.streak);
     object.streak += 1;
     context.read<ChallengerDB>().updateDate();
   }
-  void _onCancel(DailyQuest object){
+
+  void _onCancel(DailyQuest object) {
     var quests = context.read<ChallengerDB>().quests;
     int? index = quests?.indexOf(object);
     quests![index!].streak = 0;

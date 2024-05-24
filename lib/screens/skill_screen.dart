@@ -60,11 +60,8 @@ class _SkillScreenState extends State<SkillScreen> {
                     padding: const EdgeInsets.only(top: 175),
                     itemCount: value.skills!.length,
                     itemBuilder: (context, index) {
-                      return InkWell(
-                        onDoubleTap: () => removeSkill(index),
-                        child: SkillTile(
-                          skillIndex: index,
-                        ),
+                      return SkillTile(
+                        skillIndex: index,
                       );
                     }),
                 ClipPath(
@@ -140,12 +137,6 @@ class _SkillScreenState extends State<SkillScreen> {
         ),
       ],
     );
-  }
-
-  void removeSkill(int index) {
-    final skills = context.read<ChallengerDB>().skills;
-    skills!.removeAt(index);
-    context.read<ChallengerDB>().updateDate();
   }
 
   void startSkillTimer() {

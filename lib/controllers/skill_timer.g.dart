@@ -23,13 +23,18 @@ const SkillTimerSchema = Schema(
       name: r'timeSpent',
       type: IsarType.long,
     ),
-    r'timerEnd': PropertySchema(
+    r'timeSpentBeforePause': PropertySchema(
       id: 2,
+      name: r'timeSpentBeforePause',
+      type: IsarType.long,
+    ),
+    r'timerEnd': PropertySchema(
+      id: 3,
       name: r'timerEnd',
       type: IsarType.long,
     ),
     r'timerStart': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'timerStart',
       type: IsarType.dateTime,
     )
@@ -57,8 +62,9 @@ void _skillTimerSerialize(
 ) {
   writer.writeBool(offsets[0], object.isActive);
   writer.writeLong(offsets[1], object.timeSpent);
-  writer.writeLong(offsets[2], object.timerEnd);
-  writer.writeDateTime(offsets[3], object.timerStart);
+  writer.writeLong(offsets[2], object.timeSpentBeforePause);
+  writer.writeLong(offsets[3], object.timerEnd);
+  writer.writeDateTime(offsets[4], object.timerStart);
 }
 
 SkillTimer _skillTimerDeserialize(
@@ -70,8 +76,9 @@ SkillTimer _skillTimerDeserialize(
   final object = SkillTimer();
   object.isActive = reader.readBool(offsets[0]);
   object.timeSpent = reader.readLong(offsets[1]);
-  object.timerEnd = reader.readLong(offsets[2]);
-  object.timerStart = reader.readDateTimeOrNull(offsets[3]);
+  object.timeSpentBeforePause = reader.readLong(offsets[2]);
+  object.timerEnd = reader.readLong(offsets[3]);
+  object.timerStart = reader.readDateTimeOrNull(offsets[4]);
   return object;
 }
 
@@ -89,6 +96,8 @@ P _skillTimerDeserializeProp<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
+      return (reader.readLong(offset)) as P;
+    case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -153,6 +162,62 @@ extension SkillTimerQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'timeSpent',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<SkillTimer, SkillTimer, QAfterFilterCondition>
+      timeSpentBeforePauseEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'timeSpentBeforePause',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SkillTimer, SkillTimer, QAfterFilterCondition>
+      timeSpentBeforePauseGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'timeSpentBeforePause',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SkillTimer, SkillTimer, QAfterFilterCondition>
+      timeSpentBeforePauseLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'timeSpentBeforePause',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SkillTimer, SkillTimer, QAfterFilterCondition>
+      timeSpentBeforePauseBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'timeSpentBeforePause',
         lower: lower,
         includeLower: includeLower,
         upper: upper,

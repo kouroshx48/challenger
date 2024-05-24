@@ -1,5 +1,8 @@
 import 'package:challenger/controllers/leveling.dart';
 import 'package:challenger/controllers/skill.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:challenger/data/user_data_base.dart';
 
 //when user exp increases this event will be called
 class ExpIncreaseEvent {
@@ -21,6 +24,7 @@ class ExpIncreaseEvent {
     if (isReadyToLevelUp() == true) {
       // print('is ready');
       // print('is ready to level up activated');
+
       LevelUpEvent(
           userLevelingObj: userLevelingObj,
           pastLevel: userLevelingObj.level,
@@ -65,9 +69,6 @@ class LevelUpEvent {
       required this.pastLevelUpExp,
       required this.configer}) {
     _levelUp();
-    // if(configer == 2){
-    //   leveledUpObj.addExpToRelatedTopics();
-    // }
     //this event is called because user could leveled up multiple time
     //this is to check if user can level up  again or not
     ExpIncreaseEvent(object: leveledUpObj, userLevelingObj: userLevelingObj);

@@ -25,7 +25,7 @@ class MyTextField extends StatelessWidget {
                 fontSize: 15,
                 fontWeight: FontWeight.bold),
             filled: true,
-            fillColor: Colors.grey[400],
+            fillColor: Colors.grey[300],
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(13)),
             suffixIcon: suffixWidget
         )

@@ -6,14 +6,14 @@ import 'package:challenger/components/mission_tile.dart';
 import 'package:challenger/components/dialog_box.dart';
 import 'package:provider/provider.dart';
 
-class Challenges extends StatefulWidget {
-  const Challenges({super.key});
+class MissionsScreen extends StatefulWidget {
+  const MissionsScreen({super.key});
 
   @override
-  State<Challenges> createState() => _ChallengesState();
+  State<MissionsScreen> createState() => _MissionsScreenState();
 }
 
-class _ChallengesState extends State<Challenges> {
+class _MissionsScreenState extends State<MissionsScreen> {
   final _nameController = TextEditingController();
   final _expController = TextEditingController();
 
